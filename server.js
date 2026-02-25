@@ -1,20 +1,15 @@
 const http = require('http');
 const WebSocket = require('ws');
-const url = require('url');
 
-const VPS_HOST = '
-193.149.164.160'; // public IPv4 of your VPS
+const VPS_HOST = '193.149.164.160';
 const VPS_PORT = 8081;
 
 const server = http.createServer();
-
 const wss = new WebSocket.Server({ server });
 
-wss.on('connection', function connection(ws, req) {
-  // Connect to EaglerXServer on VPS
+wss.on('connection', (ws) => {
   const proxy = new WebSocket(`ws://${VPS_HOST}:${VPS_PORT}`);
 
-  // Forward messages both ways
   ws.on('message', (msg) => proxy.send(msg));
   proxy.on('message', (msg) => ws.send(msg));
 
@@ -22,6 +17,6 @@ wss.on('connection', function connection(ws, req) {
   proxy.on('close', () => ws.close());
 });
 
-server.listen(process.env.PORT || 8080, () => {
-  console.log('Reverse proxy running');
+server.listen(process.env.PORT || 443, () => {
+  console.log('Eaglercraft proxy running');
 });
